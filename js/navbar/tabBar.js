@@ -280,21 +280,25 @@ window.tabBar = {
         // https://github.com/minbrowser/min/issues/698
         return
       }
-      if (e.deltaY > 65 && e.deltaX < 10 && Date.now() - lastTabDeletion > 650) { // swipe up to delete tabs
-        lastTabDeletion = Date.now()
+      if (e.deltaY < -30 && e.deltaX < 10) { // scroll up to go to previous tab
+        var currentIndex = tabs.getIndex(tabs.getSelected())
+        var previousTab = tabs.getAtIndex(currentIndex - 1)
 
-        /* tab deletion is disabled in focus mode */
-        if (focusMode.enabled()) {
-          focusMode.warn()
-          return
+        if (previousTab) {
+          browserUI.switchToTab(previousTab.id)
+        } else {
+          browserUI.switchToTab(tabs.getAtIndex(tabs.count() - 1).id)
         }
+      }
+      if (e.deltaY > 30 && e.deltaX < 10) { // scroll down to go to next tab
+        var currentIndex = tabs.getIndex(tabs.getSelected())
+        var nextTab = tabs.getAtIndex(currentIndex + 1)
 
-        var tab = this.getAttribute('data-tab')
-        this.style.transform = 'translateY(-100%)'
-
-        setTimeout(function () {
-          browserUI.closeTab(tab)
-        }, 150) // wait until the animation has completed
+        if (nextTab) {
+          browserUI.switchToTab(nextTab.id)
+        } else {
+          browserUI.switchToTab(tabs.getAtIndex(0).id)
+        }
       }
     })
 
